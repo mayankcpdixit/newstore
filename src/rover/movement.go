@@ -1,39 +1,42 @@
 package rover
 
-
-func (rover *Rover) Move(command string) {
+func (rover *Rover) Listen(command string) {
 	for _, char := range command {
 		switch string(char) {
-			case "F": {
-				if rover.Direction == "east" {
-					rover.X++
-				} else if rover.Direction == "west" {
-					rover.X--
-				} else if rover.Direction == "north" {
-					rover.Y++
-				} else if rover.Direction == "south" {
-					rover.Y--
-				}
-			}
-			case "B": {
-				if rover.Direction == "east" {
-					rover.X--
-				} else if rover.Direction == "west" {
-					rover.X++
-				} else if rover.Direction == "north" {
-					rover.Y--
-				} else if rover.Direction == "south" {
-					rover.Y++
-				}
-			}
-			case "L": {
-				rover.Rotate(false)
-			}
-			case "R": {
-				rover.Rotate(true)
-			}
+		case "F": {
+			rover.Move(false)
+		}
+		case "B": {
+			rover.Move(true)
+		}
+		case "L": {
+			rover.Rotate(false)
+		}
+		case "R": {
+			rover.Rotate(true)
+		}
+		}
+	}
+}
 
-		} // switch ends
+func (rover *Rover) Move(backward bool) {
+	delta := 1
+	if backward {
+		delta = -1
+	}
+	switch rover.Direction {
+	case "east": {
+		rover.X += delta
+	}
+	case "west": {
+		rover.X += (delta * -1)
+	}
+	case "north": {
+		rover.Y += delta
+	}
+	case "south": {
+		rover.Y += (delta * -1)
+	}
 	}
 }
 
