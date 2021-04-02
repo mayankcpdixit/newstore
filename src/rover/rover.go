@@ -7,6 +7,10 @@ type Rover struct {
 }
 
 
-func NewRover(x, y int, direction string) *Rover {
-	return &Rover{X: x, Y: y, Direction: direction}
+func New(x, y int, direction string) *Rover {
+	return &Rover{
+		X: x,
+		Y: y,
+		Direction: direction,
+	}
 }

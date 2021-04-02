@@ -5,6 +5,55 @@ import (
 	"testing"
 )
 
+func TestRover_Rotate(t *testing.T) {
+	testcases := []struct {
+		InputDirection 		string
+		Clockwise 			bool
+		ExpectedDirection 	string
+	}{{
+		InputDirection: "east",
+		Clockwise: false,
+		ExpectedDirection: "north",
+	},{
+		InputDirection: "north",
+		Clockwise: false,
+		ExpectedDirection: "west",
+	},{
+		InputDirection: "west",
+		Clockwise: false,
+		ExpectedDirection: "south",
+	},{
+		InputDirection: "south",
+		Clockwise: false,
+		ExpectedDirection: "east",
+	},{
+		InputDirection: "east",
+		Clockwise: true,
+		ExpectedDirection: "south",
+	},{
+		InputDirection: "south",
+		Clockwise: true,
+		ExpectedDirection: "west",
+	},{
+		InputDirection: "west",
+		Clockwise: true,
+		ExpectedDirection: "north",
+	},{
+		InputDirection: "north",
+		Clockwise: true,
+		ExpectedDirection: "east",
+	}}
+
+	for _, testcase := range testcases{
+		rover := New(0, 0, testcase.InputDirection);
+		rover.Rotate(testcase.Clockwise)
+
+		if rover.Direction != testcase.ExpectedDirection {
+			t.Errorf("Testcase failed.\n Expected direction: %s\n Received: %s\n. Testcase: %+v\n", testcase.ExpectedDirection, rover.Direction, testcase)
+		}
+	}
+}
+
 func TestRover_Move(t *testing.T) {
 	type testcase struct {
 		StartX int
