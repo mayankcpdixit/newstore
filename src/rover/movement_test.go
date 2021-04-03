@@ -23,7 +23,8 @@ func TestRover_Move(t *testing.T) {
 
 	for _, testcase := range testcases {
 		rover := New(0, 0, testcase.direction);
-		rover.Move(testcase.movement)
+		x,y := rover.GetNextCoordinate(testcase.movement)
+		rover.Move(x,y)
 
 		if rover.X != testcase.expectedX || rover.Y != testcase.expectedY {
 			t.Errorf("Testcase failed.\n Expected Coordinates: (%d, %d)\n " +

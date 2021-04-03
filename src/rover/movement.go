@@ -19,10 +19,12 @@ func (rover *Rover) Listen(command string) {
 	for _, char := range command {
 		switch string(char) {
 		case "F": {
-			rover.Move(FORWARD)
+			x,y := rover.GetNextCoordinate(FORWARD)
+			rover.Move(x,y)
 		}
 		case "B": {
-			rover.Move(BACKWARD)
+			x,y := rover.GetNextCoordinate(BACKWARD)
+			rover.Move(x,y)
 		}
 		case "L": {
 			rover.Rotate(ANTICLOCKWISE)
@@ -34,25 +36,31 @@ func (rover *Rover) Listen(command string) {
 	}
 }
 
-func (rover *Rover) Move(movement Movement) {
+func (rover *Rover) Move(x,y int) {
+	rover.X, rover.Y = x, y
+}
+
+func (rover *Rover) GetNextCoordinate(movement Movement) (int, int){
+	x,y := rover.X, rover.Y
 	delta := 1
 	if movement == BACKWARD {
 		delta = -1
 	}
 	switch rover.Direction {
 	case "east": {
-		rover.X += delta
+		x += delta
 	}
 	case "west": {
-		rover.X += (delta * -1)
+		x += (delta * -1)
 	}
 	case "north": {
-		rover.Y += delta
+		y += delta
 	}
 	case "south": {
-		rover.Y += (delta * -1)
+		y += (delta * -1)
 	}
 	}
+	return x,y
 }
 
 func (rover *Rover) Rotate (rotation Rotation) {
