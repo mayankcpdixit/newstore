@@ -1,17 +1,16 @@
 package landscape
 
 type Landscape struct {
-	Obstacles [][]int // list of coordinates
+	Obstacles []Coordinate // list of coordinates
 }
 
-func Init(obstacles [][]int) *Landscape {
-	l := Landscape{Obstacles: obstacles}
-	return &l;
+func NewLandscape(obstacles []Coordinate) *Landscape {
+	return &Landscape{Obstacles: obstacles}
 }
 
-func (l *Landscape) HasObstacleAt(x,y int) bool {
+func (l *Landscape) HasObstacleAt(coordinate Coordinate) bool {
 	for _,obs := range l.Obstacles {
-		if obs[0] == x && obs[1] == y {
+		if obs.X == coordinate.X && obs.Y == coordinate.Y {
 			return true
 		}
 	}

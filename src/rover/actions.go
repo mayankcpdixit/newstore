@@ -1,5 +1,9 @@
 package rover
 
+import (
+	"newstore/src/landscape"
+)
+
 type Movement int
 
 const (
@@ -26,18 +30,18 @@ func (rover *Rover) Listen(command string) (State){
 	for _, char := range command {
 		switch string(char) {
 		case "F": {
-			x,y := rover.GetNextCoordinate(MOVE_FORWARD)
-			if rover.Landscape.HasObstacleAt(x,y) {
+			coordinate := rover.GetNextCoordinate(MOVE_FORWARD)
+			if rover.Landscape.HasObstacleAt(coordinate) {
 				return STOPPED
 			}
-			rover.Move(x,y)
+			rover.Move(coordinate)
 		}
 		case "B": {
-			x,y := rover.GetNextCoordinate(MOVE_BACKWARD)
-			if rover.Landscape.HasObstacleAt(x,y) {
+			coordinate := rover.GetNextCoordinate(MOVE_BACKWARD)
+			if rover.Landscape.HasObstacleAt(coordinate) {
 				return STOPPED
 			}
-			rover.Move(x,y)
+			rover.Move(coordinate)
 		}
 		case "L": {
 			rover.Rotate(ANTICLOCKWISE)
@@ -50,31 +54,31 @@ func (rover *Rover) Listen(command string) (State){
 	return MOBILE
 }
 
-func (rover *Rover) Move(x,y int) {
-	rover.X, rover.Y = x, y
+func (rover *Rover) Move(coordinate landscape.Coordinate) {
+	rover.Coordinate = coordinate
 }
 
-func (rover *Rover) GetNextCoordinate(movement Movement) (int, int){
-	x,y := rover.X, rover.Y
+func (rover *Rover) GetNextCoordinate(movement Movement) landscape.Coordinate {
+	coordinate := rover.Coordinate
 	delta := 1
 	if movement == MOVE_BACKWARD {
 		delta = -1
 	}
 	switch rover.Direction {
 	case "east": {
-		x += delta
+		coordinate.X += delta
 	}
 	case "west": {
-		x += (delta * -1)
+		coordinate.X += (delta * -1)
 	}
 	case "north": {
-		y += delta
+		coordinate.Y += delta
 	}
 	case "south": {
-		y += (delta * -1)
+		coordinate.Y += (delta * -1)
 	}
 	}
-	return x,y
+	return coordinate
 }
 
 func (rover *Rover) Rotate (rotation Rotation) {
