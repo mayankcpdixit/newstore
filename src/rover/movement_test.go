@@ -6,29 +6,29 @@ import (
 
 func TestRover_Move(t *testing.T) {
 	testcases := []struct {
-		InputX 				int
-		InputY 				int
-		Direction 			string
-		Backward 			bool
-		ExpectedX 			int
-		ExpectedY 			int
-	}{{InputX: 0, InputY: 0, Backward: false, Direction: "east", ExpectedX: 1, ExpectedY: 0},
-		{InputX: 0, InputY: 0, Backward: false, Direction: "west", ExpectedX: -1, ExpectedY: 0},
-		{InputX: 0, InputY: 0, Backward: false, Direction: "north", ExpectedX: 0, ExpectedY: 1},
-		{InputX: 0, InputY: 0, Backward: false, Direction: "south", ExpectedX: 0, ExpectedY: -1},
-		{InputX: 0, InputY: 0, Backward: true, Direction: "east", ExpectedX: -1, ExpectedY: 0},
-		{InputX: 0, InputY: 0, Backward: true, Direction: "west", ExpectedX: 1, ExpectedY: 0},
-		{InputX: 0, InputY: 0, Backward: true, Direction: "north", ExpectedX: 0, ExpectedY: -1},
-		{InputX: 0, InputY: 0, Backward: true, Direction: "south", ExpectedX: 0, ExpectedY: 1}}
+		inputX    int
+		inputY    int
+		direction string
+		movement  Movement
+		expectedX int
+		expectedY int
+	}{{inputX: 0, inputY: 0, movement: FORWARD, direction: "east", expectedX: 1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: FORWARD, direction: "west", expectedX: -1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: FORWARD, direction: "north", expectedX: 0, expectedY: 1},
+		{inputX: 0, inputY: 0, movement: FORWARD, direction: "south", expectedX: 0, expectedY: -1},
+		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "east", expectedX: -1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "west", expectedX: 1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "north", expectedX: 0, expectedY: -1},
+		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "south", expectedX: 0, expectedY: 1}}
 
 	for _, testcase := range testcases {
-		rover := New(0, 0, testcase.Direction);
-		rover.Move(testcase.Backward)
+		rover := New(0, 0, testcase.direction);
+		rover.Move(testcase.movement)
 
-		if rover.X != testcase.ExpectedX || rover.Y != testcase.ExpectedY {
+		if rover.X != testcase.expectedX || rover.Y != testcase.expectedY {
 			t.Errorf("Testcase failed.\n Expected Coordinates: (%d, %d)\n " +
 				"Received: Coordinates: (%d, %d)\n. Testcase: %+v\n",
-				testcase.ExpectedX, testcase.ExpectedY, rover.X, rover.Y, testcase)
+				testcase.expectedX, testcase.expectedY, rover.X, rover.Y, testcase)
 		} else {
 			t.Log("Works for testcase: ", testcase)
 		}
@@ -37,26 +37,26 @@ func TestRover_Move(t *testing.T) {
 
 func TestRover_Rotate(t *testing.T) {
 	testcases := []struct {
-		InputDirection 		string
-		Clockwise 			bool
-		ExpectedDirection 	string
-	}{{ InputDirection: "east", Clockwise: false, ExpectedDirection: "north"},
-		{ InputDirection: "north", Clockwise: false, ExpectedDirection: "west"},
-		{ InputDirection: "west", Clockwise: false, ExpectedDirection: "south"},
-		{ InputDirection: "south", Clockwise: false, ExpectedDirection: "east"},
-		{ InputDirection: "east", Clockwise: true, ExpectedDirection: "south"},
-		{ InputDirection: "south", Clockwise: true, ExpectedDirection: "west"},
-		{ InputDirection: "west", Clockwise: true, ExpectedDirection: "north"},
-		{ InputDirection: "north", Clockwise: true, ExpectedDirection: "east"}}
+		inputDirection    string
+		rotation          Rotation
+		expectedDirection string
+	}{{ inputDirection: "east", rotation: ANTICLOCKWISE, expectedDirection: "north"},
+		{ inputDirection: "north", rotation: ANTICLOCKWISE, expectedDirection: "west"},
+		{ inputDirection: "west", rotation: ANTICLOCKWISE, expectedDirection: "south"},
+		{ inputDirection: "south", rotation: ANTICLOCKWISE, expectedDirection: "east"},
+		{ inputDirection: "east", rotation: CLOCKWISE, expectedDirection: "south"},
+		{ inputDirection: "south", rotation: CLOCKWISE, expectedDirection: "west"},
+		{ inputDirection: "west", rotation: CLOCKWISE, expectedDirection: "north"},
+		{ inputDirection: "north", rotation: CLOCKWISE, expectedDirection: "east"}}
 
 	for _, testcase := range testcases{
-		rover := New(0, 0, testcase.InputDirection);
-		rover.Rotate(testcase.Clockwise)
+		rover := New(0, 0, testcase.inputDirection);
+		rover.Rotate(testcase.rotation)
 
-		if rover.Direction != testcase.ExpectedDirection {
+		if rover.Direction != testcase.expectedDirection {
 			t.Errorf("Testcase failed.\n Expected direction: %s\n " +
 				"Received: %s\n. Testcase: %+v\n",
-				testcase.ExpectedDirection, rover.Direction, testcase)
+				testcase.expectedDirection, rover.Direction, testcase)
 		} else {
 			t.Log("Works for testcase: ", testcase)
 		}

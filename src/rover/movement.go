@@ -1,27 +1,42 @@
 package rover
 
+type Movement int
+
+const (
+	FORWARD  Movement = iota
+	BACKWARD
+)
+
+type Rotation bool
+
+const (
+	CLOCKWISE 		Rotation = true
+	ANTICLOCKWISE 	Rotation = false
+)
+
 func (rover *Rover) Listen(command string) {
+
 	for _, char := range command {
 		switch string(char) {
 		case "F": {
-			rover.Move(false)
+			rover.Move(FORWARD)
 		}
 		case "B": {
-			rover.Move(true)
+			rover.Move(BACKWARD)
 		}
 		case "L": {
-			rover.Rotate(false)
+			rover.Rotate(ANTICLOCKWISE)
 		}
 		case "R": {
-			rover.Rotate(true)
+			rover.Rotate(CLOCKWISE)
 		}
 		}
 	}
 }
 
-func (rover *Rover) Move(backward bool) {
+func (rover *Rover) Move(movement Movement) {
 	delta := 1
-	if backward {
+	if movement == BACKWARD {
 		delta = -1
 	}
 	switch rover.Direction {
@@ -40,10 +55,10 @@ func (rover *Rover) Move(backward bool) {
 	}
 }
 
-func (rover *Rover) Rotate (Clockwise bool) {
+func (rover *Rover) Rotate (rotation Rotation) {
 	directions := []string{"east", "south", "west", "north"} // "clockwise ordered list" of direction. Do not change the order.
 	delta := 1
-	if !Clockwise {
+	if rotation == ANTICLOCKWISE {
 		delta = -1
 	}
 	for idx, dir := range directions {
