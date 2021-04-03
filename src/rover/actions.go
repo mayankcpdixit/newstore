@@ -3,8 +3,8 @@ package rover
 type Movement int
 
 const (
-	FORWARD  Movement = iota
-	BACKWARD
+	MOVE_FORWARD Movement = iota
+	MOVE_BACKWARD
 )
 
 type Rotation bool
@@ -14,16 +14,29 @@ const (
 	ANTICLOCKWISE 	Rotation = false
 )
 
-func (rover *Rover) Listen(command string) {
+type State int
+
+const (
+	STOPPED State = iota
+	MOBILE
+)
+
+func (rover *Rover) Listen(command string) (State){
 
 	for _, char := range command {
 		switch string(char) {
 		case "F": {
-			x,y := rover.GetNextCoordinate(FORWARD)
+			x,y := rover.GetNextCoordinate(MOVE_FORWARD)
+			if rover.Landscape.HasObstacleAt(x,y) {
+				return STOPPED
+			}
 			rover.Move(x,y)
 		}
 		case "B": {
-			x,y := rover.GetNextCoordinate(BACKWARD)
+			x,y := rover.GetNextCoordinate(MOVE_BACKWARD)
+			if rover.Landscape.HasObstacleAt(x,y) {
+				return STOPPED
+			}
 			rover.Move(x,y)
 		}
 		case "L": {
@@ -34,6 +47,7 @@ func (rover *Rover) Listen(command string) {
 		}
 		}
 	}
+	return MOBILE
 }
 
 func (rover *Rover) Move(x,y int) {
@@ -43,7 +57,7 @@ func (rover *Rover) Move(x,y int) {
 func (rover *Rover) GetNextCoordinate(movement Movement) (int, int){
 	x,y := rover.X, rover.Y
 	delta := 1
-	if movement == BACKWARD {
+	if movement == MOVE_BACKWARD {
 		delta = -1
 	}
 	switch rover.Direction {

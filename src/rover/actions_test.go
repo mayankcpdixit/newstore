@@ -1,6 +1,7 @@
 package rover
 
 import (
+	"newstore/src/landscape"
 	"testing"
 )
 
@@ -11,7 +12,7 @@ func TestRover_Move(t *testing.T) {
 	}{{inputX: 20, inputY:-20}}
 
 	for _, testcase := range testcases {
-		rover := New(0, 0, "east");
+		rover := New(0, 0, "east", &landscape.Landscape{});
 		rover.Move(testcase.inputX, testcase.inputY)
 
 		if rover.X != testcase.inputX || rover.Y != testcase.inputY {
@@ -19,7 +20,7 @@ func TestRover_Move(t *testing.T) {
 				"Received: Coordinates: (%d, %d)\n. Testcase: %+v\n",
 				testcase.inputX, testcase.inputY, rover.X, rover.Y, testcase)
 		} else {
-			t.Log("Works for testcase: ", testcase)
+			t.Logf("Works for testcase: %+v", testcase)
 		}
 	}
 }
@@ -32,17 +33,17 @@ func TestRover_GetNextCoordinate(t *testing.T) {
 		movement  Movement
 		expectedX int
 		expectedY int
-	}{{inputX: 0, inputY: 0, movement: FORWARD, direction: "east", expectedX: 1, expectedY: 0},
-		{inputX: 0, inputY: 0, movement: FORWARD, direction: "west", expectedX: -1, expectedY: 0},
-		{inputX: 0, inputY: 0, movement: FORWARD, direction: "north", expectedX: 0, expectedY: 1},
-		{inputX: 0, inputY: 0, movement: FORWARD, direction: "south", expectedX: 0, expectedY: -1},
-		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "east", expectedX: -1, expectedY: 0},
-		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "west", expectedX: 1, expectedY: 0},
-		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "north", expectedX: 0, expectedY: -1},
-		{inputX: 0, inputY: 0, movement: BACKWARD, direction: "south", expectedX: 0, expectedY: 1}}
+	}{{inputX: 0, inputY: 0, movement: MOVE_FORWARD, direction: "east", expectedX: 1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: MOVE_FORWARD, direction: "west", expectedX: -1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: MOVE_FORWARD, direction: "north", expectedX: 0, expectedY: 1},
+		{inputX: 0, inputY: 0, movement: MOVE_FORWARD, direction: "south", expectedX: 0, expectedY: -1},
+		{inputX: 0, inputY: 0, movement: MOVE_BACKWARD, direction: "east", expectedX: -1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: MOVE_BACKWARD, direction: "west", expectedX: 1, expectedY: 0},
+		{inputX: 0, inputY: 0, movement: MOVE_BACKWARD, direction: "north", expectedX: 0, expectedY: -1},
+		{inputX: 0, inputY: 0, movement: MOVE_BACKWARD, direction: "south", expectedX: 0, expectedY: 1}}
 
 	for _, testcase := range testcases {
-		rover := New(0, 0, testcase.direction);
+		rover := New(0, 0, testcase.direction, &landscape.Landscape{});
 		x,y := rover.GetNextCoordinate(testcase.movement)
 
 		if x != testcase.expectedX || y != testcase.expectedY {
@@ -50,7 +51,7 @@ func TestRover_GetNextCoordinate(t *testing.T) {
 				"Received: Coordinates: (%d, %d)\n. Testcase: %+v\n",
 				testcase.expectedX, testcase.expectedY, rover.X, rover.Y, testcase)
 		} else {
-			t.Log("Works for testcase: ", testcase)
+			t.Logf("Works for testcase: %+v", testcase)
 		}
 	}
 }
@@ -70,7 +71,7 @@ func TestRover_Rotate(t *testing.T) {
 		{ inputDirection: "north", rotation: CLOCKWISE, expectedDirection: "east"}}
 
 	for _, testcase := range testcases{
-		rover := New(0, 0, testcase.inputDirection);
+		rover := New(0, 0, testcase.inputDirection, &landscape.Landscape{});
 		rover.Rotate(testcase.rotation)
 
 		if rover.Direction != testcase.expectedDirection {
@@ -78,7 +79,7 @@ func TestRover_Rotate(t *testing.T) {
 				"Received: %s\n. Testcase: %+v\n",
 				testcase.expectedDirection, rover.Direction, testcase)
 		} else {
-			t.Log("Works for testcase: ", testcase)
+			t.Logf("Works for testcase: %+v", testcase)
 		}
 	}
 }
@@ -92,72 +93,83 @@ func TestRover_Listen(t *testing.T) {
 		ExpectedX int
 		ExpectedY int
 		ExpectedDirection string
+		Obstacles [][]int
+		ExpectedState State
 	}
 
 	tcs := []testcase{{
 		StartX: 0, StartY: 0, StartDirection: "east", InputCommand: "F",
-		ExpectedX: 1, ExpectedY: 0, ExpectedDirection: "east",
+		ExpectedX: 1, ExpectedY: 0, ExpectedDirection: "east", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "east", InputCommand: "B",
-		ExpectedX: -1, ExpectedY: 0, ExpectedDirection: "east",
+		ExpectedX: -1, ExpectedY: 0, ExpectedDirection: "east", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "east", InputCommand: "L",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "north",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "north", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "east", InputCommand: "R",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "south",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "south", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "west", InputCommand: "F",
-		ExpectedX: -1, ExpectedY: 0, ExpectedDirection: "west",
+		ExpectedX: -1, ExpectedY: 0, ExpectedDirection: "west", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "west", InputCommand: "B",
-		ExpectedX: 1, ExpectedY: 0, ExpectedDirection: "west",
+		ExpectedX: 1, ExpectedY: 0, ExpectedDirection: "west", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "west", InputCommand: "L",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "south",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "south", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "west", InputCommand: "R",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "north",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "north", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "north", InputCommand: "F",
-		ExpectedX: 0, ExpectedY: 1, ExpectedDirection: "north",
+		ExpectedX: 0, ExpectedY: 1, ExpectedDirection: "north", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "north", InputCommand: "B",
-		ExpectedX: 0, ExpectedY: -1, ExpectedDirection: "north",
+		ExpectedX: 0, ExpectedY: -1, ExpectedDirection: "north", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "north", InputCommand: "L",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "west",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "west", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "north", InputCommand: "R",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "east",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "east", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "south", InputCommand: "F",
-		ExpectedX: 0, ExpectedY: -1, ExpectedDirection: "south",
+		ExpectedX: 0, ExpectedY: -1, ExpectedDirection: "south", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "south", InputCommand: "B",
-		ExpectedX: 0, ExpectedY: 1, ExpectedDirection: "south",
+		ExpectedX: 0, ExpectedY: 1, ExpectedDirection: "south", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "south", InputCommand: "L",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "east",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "east", ExpectedState: MOBILE,
 	}, {
 		StartX: 0, StartY: 0, StartDirection: "south", InputCommand: "R",
-		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "west",
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "west", ExpectedState: MOBILE,
 	}, {
 		StartX: 4, StartY: 2, StartDirection: "east", InputCommand: "FLFFFRFLB",
-		ExpectedX: 6, ExpectedY: 4, ExpectedDirection: "north",
-	}}
+		ExpectedX: 6, ExpectedY: 4, ExpectedDirection: "north", ExpectedState: MOBILE,
+	}, {
+		StartX: 4, StartY: 2, StartDirection: "east", InputCommand: "FLFFFRFLB",
+		ExpectedX: 6, ExpectedY: 5, ExpectedDirection: "north",
+		Obstacles: [][]int{{6,4}}, ExpectedState: STOPPED,
+	}, {
+		StartX: 0, StartY: 0, StartDirection: "east", InputCommand: "F",
+		Obstacles: [][]int{{1,0}},
+		ExpectedX: 0, ExpectedY: 0, ExpectedDirection: "east", ExpectedState: STOPPED,
+	},}
 
 	for _,tc := range tcs {
-		rover := New(tc.StartX, tc.StartY, tc.StartDirection);
-		rover.Listen(tc.InputCommand);
-		if rover.X != tc.ExpectedX || rover.Y != tc.ExpectedY || rover.Direction != tc.ExpectedDirection {
+		land := landscape.Init(tc.Obstacles)
+		rover := New(tc.StartX, tc.StartY, tc.StartDirection, land);
+		returnedState := rover.Listen(tc.InputCommand);
+		if returnedState != tc.ExpectedState {
+			t.Errorf("TC failed. %+v", tc)
+		} else if rover.X != tc.ExpectedX || rover.Y != tc.ExpectedY || rover.Direction != tc.ExpectedDirection {
 			t.Errorf("TC Failed. \nExpected: (%d, %d) %s, \n" +
 				"Received: (%d, %d) %s\nfor tc: %+v", tc.ExpectedX,
 				tc.ExpectedY, tc.ExpectedDirection, rover.X, rover.Y, rover.Direction, tc);
 		} else {
-			t.Logf("TC Passed. \nExpected: (%d, %d) %s, \n" +
-				"Received: (%d, %d) %s\n", tc.ExpectedX,
-				tc.ExpectedY, tc.ExpectedDirection, rover.X, rover.Y, rover.Direction);
+			t.Logf("Works for testcase: %+v", tc)
 		}
 	}
 
