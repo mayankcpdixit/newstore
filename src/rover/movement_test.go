@@ -8,6 +8,26 @@ func TestRover_Move(t *testing.T) {
 	testcases := []struct {
 		inputX    int
 		inputY    int
+	}{{inputX: 20, inputY:-20}}
+
+	for _, testcase := range testcases {
+		rover := New(0, 0, "east");
+		rover.Move(testcase.inputX, testcase.inputY)
+
+		if rover.X != testcase.inputX || rover.Y != testcase.inputY {
+			t.Errorf("Testcase failed.\n Expected Coordinates: (%d, %d)\n " +
+				"Received: Coordinates: (%d, %d)\n. Testcase: %+v\n",
+				testcase.inputX, testcase.inputY, rover.X, rover.Y, testcase)
+		} else {
+			t.Log("Works for testcase: ", testcase)
+		}
+	}
+}
+
+func TestRover_GetNextCoordinate(t *testing.T) {
+	testcases := []struct {
+		inputX    int
+		inputY    int
 		direction string
 		movement  Movement
 		expectedX int
@@ -24,9 +44,8 @@ func TestRover_Move(t *testing.T) {
 	for _, testcase := range testcases {
 		rover := New(0, 0, testcase.direction);
 		x,y := rover.GetNextCoordinate(testcase.movement)
-		rover.Move(x,y)
 
-		if rover.X != testcase.expectedX || rover.Y != testcase.expectedY {
+		if x != testcase.expectedX || y != testcase.expectedY {
 			t.Errorf("Testcase failed.\n Expected Coordinates: (%d, %d)\n " +
 				"Received: Coordinates: (%d, %d)\n. Testcase: %+v\n",
 				testcase.expectedX, testcase.expectedY, rover.X, rover.Y, testcase)
