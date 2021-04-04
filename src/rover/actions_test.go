@@ -168,5 +168,21 @@ func TestRover_Listen(t *testing.T) {
 			t.Logf("Works for testcase: %+v", tc)
 		}
 	}
+}
 
-} 
+// TODO: Part 3
+func TestRover_PathFinder(t *testing.T) {
+	for _, testcase := range []struct {
+		source landscape.Coordinate
+		destination landscape.Coordinate
+		obstacles []landscape.Coordinate
+	}{{
+		source: landscape.NewCoordinate(0, 0),
+		destination: landscape.NewCoordinate(5,5),
+	}}{
+		land := landscape.NewLandscape(testcase.obstacles)
+		rover := New(ORIGIN, "east", land)
+		rover.PathFinder(testcase.destination)
+		// TODO: Test Part 3
+	}
+}

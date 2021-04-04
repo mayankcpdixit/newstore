@@ -49,6 +49,7 @@ func (rover *Rover) Listen(command string) (State){
 		case "R": {
 			rover.Rotate(CLOCKWISE)
 		}
+		// TODO: catch invalid command throw err
 		}
 	}
 	return MOBILE
@@ -77,6 +78,7 @@ func (rover *Rover) GetNextCoordinate(movement Movement) landscape.Coordinate {
 	case "south": {
 		coordinate.Y += (delta * -1)
 	}
+	// TODO: catch invalid direction throw err
 	}
 	return coordinate
 }
@@ -93,4 +95,15 @@ func (rover *Rover) Rotate (rotation Rotation) {
 			break;
 		}
 	}
+}
+
+func (rover *Rover) PathFinder(destination landscape.Coordinate) string {
+	dict := map[landscape.Coordinate]string{} // coordinate -> shortest_path_to_that_coordinate_from_rover_location
+	return findPath(rover.Coordinate, destination, rover.Landscape.Obstacles, dict)
+}
+
+
+func findPath(source, destination landscape.Coordinate, obstacles []landscape.Coordinate, dict map[landscape.Coordinate]string) string {
+	// TODO: Part 3
+	return ""
 }
